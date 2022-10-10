@@ -1,7 +1,11 @@
 import './bootstrap';
-window.Livewire = require("../../public/vendor/livewire/livewire.js");
+// window.Livewire = require("../../public/vendor/livewire/livewire.js");
 window.lastEmit = 0;
+document.addEventListener("DOMContentLoaded", function(event) {
+    setInterval(countdownTimers, 1000);
+    countdownTimers();
 
+});
 function countdownTimers() {
     const elements = document.getElementsByClassName('countdown');
 
@@ -41,6 +45,3 @@ function countdownTimers() {
         ].join(':');
     }
 }
-
-setInterval(countdownTimers, 1000);
-countdownTimers();

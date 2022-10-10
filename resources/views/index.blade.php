@@ -25,7 +25,8 @@
 
 
 
-        <script src="/js/app.js" />
+        <script src="/vendor/livewire/livewire.js" ></script>
+        <script src="/js/app.js" ></script>
         @livewireScripts
     </body>
 </html>

@@ -16,6 +16,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function (){
+            sleep(5);
+            $this->call('apex:crafting');
+            sleep(5);
+            $this->call('apex:maps');
+            sleep(5);
+            $this->call('apex:servers');
+            sleep(5);
+        })->everyMinute();
     }
 
     /**
