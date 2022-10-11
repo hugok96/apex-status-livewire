@@ -12,9 +12,8 @@ class CraftingItems extends Component
      *
      * @return void
      */
-    public function __construct(public CraftingRotation $rotation)
+    public function __construct(private CraftingRotation $rotation)
     {
-        //
     }
 
     /**
@@ -24,6 +23,9 @@ class CraftingItems extends Component
      */
     public function render()
     {
-        return view('components.crafting-items');
+        // Ensure that only unique items are displayed (e.g. ignore the same ammo item)
+        return view('components.crafting-items', [
+            'items' => $this->rotation->items->unique(fn($definition) => $definition->item_type->name)
+        ]);
     }
 }

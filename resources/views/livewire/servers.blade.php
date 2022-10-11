@@ -1,6 +1,6 @@
 <main id="servers">
     @foreach($serverTypes as $serverType => $servers)
-        <div class="server-type" *ngFor="let server of normalizedServers">
+        <div class="server-type">
             <table>
                 <tr>
                     <th colspan="3">{{ $serverType }}</th>

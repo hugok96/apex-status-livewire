@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Events\MapsUpdated;
 use App\Models\GameMode;
 use App\Models\MapRotation;
 use App\Services\Api;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 
 class RetrieveMapRotations extends Command
@@ -28,45 +28,64 @@ class RetrieveMapRotations extends Command
     /**
      * Execute the console command.
      *
+     * @param Api $api
      * @return int
+     * @throws GuzzleException
      */
-    public function handle(Api $api) : int
+    public function handle(Api $api): int
     {
-        foreach($api->getMapRotations() as $apiId => ['current' => $currentRotation, 'next' => $nextRotation]) {
-            // TODO: implement automatic adding and removing of limited time modes
+        // Iterate maps rotations retrieved by the api, unpacking the apiId, current and next rotations
+        foreach ($api->getMapRotations() as $apiId => ['current' => $currentRotation, 'next' => $nextRotation]) {
+            // Only process if the game mode already exists in the database (seeded)
             $gameMode = GameMode::where('api_id', '=', $apiId)->first();
-            if($gameMode instanceof GameMode) {
-                $this->processGameMode($gameMode, $currentRotation, $nextRotation);
+            if ($gameMode instanceof GameMode) {
+                $this->updateGameMode($gameMode, $currentRotation, $nextRotation);
             }
         }
 
+        // TODO: implement automatic adding and removing of limited time modes
         // TODO: implements events over websockets
-        // event(new MapsUpdated());
 
         return Command::SUCCESS;
     }
 
-    private function processGameMode(GameMode $gameMode, array $currentRotation, ?array $nextRotation) : void
+    /**
+     * Updates the game mode's rotations if necessary
+     *
+     * @param GameMode $gameMode
+     * @param array $currentRotation
+     * @param array|null $nextRotation
+     * @return void
+     */
+    private function updateGameMode(GameMode $gameMode, array $currentRotation, ?array $nextRotation): void
     {
-        if(null === $gameMode->current_rotation || $gameMode->current_rotation?->start->timestamp !== $currentRotation['start']) {
+        // Only process if rotation does not exist (null-safety) or its timestamp differs from the api timestamp
+        if ($gameMode->current_rotation?->start->timestamp !== $currentRotation['start']) {
             $gameMode->current_rotation?->forceDelete();
-            $gameMode->current_rotation()->associate(MapRotation::create($this->rotationToArray($currentRotation)))->save();
+            $gameMode->current_rotation()->associate($this->createMapRotation($currentRotation))->save();
         }
 
-        if(null === $gameMode->next_rotation || $gameMode->next_rotation?->start->timestamp !== $nextRotation['start']) {
+        if ($gameMode->next_rotation?->start->timestamp !== $nextRotation['start']) {
             $gameMode->next_rotation?->forceDelete();
-            $gameMode->next_rotation()->associate(MapRotation::create($this->rotationToArray($nextRotation)))->save();
+            $gameMode->next_rotation()->associate($this->createMapRotation($nextRotation))->save();
         }
     }
 
-    private function rotationToArray(array $rotation) : array {
-        return [
+    /**
+     * Creates a MapRotation in the database with normalised data
+     *
+     * @param array $rotation
+     * @return MapRotation
+     */
+    private function createMapRotation(array $rotation): MapRotation
+    {
+        return MapRotation::create([
             'start' => Carbon::createFromTimestampUTC($rotation['start']),
             'end' => Carbon::createFromTimestampUTC($rotation['end']),
             'name' => $rotation['map'],
             'code' => $rotation['code'],
             'asset' => $rotation['asset'],
             'duration' => $rotation['DurationInSecs']
-        ];
+        ]);
     }
 }

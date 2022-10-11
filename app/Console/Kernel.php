@@ -10,20 +10,21 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->call(function (){
-            sleep(5);
-            $this->call('apex:crafting');
-            sleep(5);
-            $this->call('apex:maps');
-            sleep(5);
-            $this->call('apex:servers');
-            sleep(5);
+        // Run the retrieving commands 3 times each, with 5 second intervals every minute
+        $schedule->call(function () {
+            $commands = ['apex:crafting', 'apex:maps', 'apex:servers'];
+            $sleepDuration = 5;
+            for ($i = 0; $i < 3; $i++) {
+                foreach ($commands as $command) {
+                    $this->call($command);
+                    sleep($sleepDuration);
+                }
+            }
         })->everyMinute();
     }
 
@@ -34,7 +35,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

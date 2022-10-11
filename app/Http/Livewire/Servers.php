@@ -7,6 +7,13 @@ use Livewire\Component;
 
 class Servers extends Component
 {
+    protected $listeners = ['timerExpired' => 'refresh'];
+
+    public function refresh()
+    {
+        // dummy function to facilitate re-rendering
+    }
+
     public function render()
     {
         return view('livewire.servers', [
@@ -15,12 +22,14 @@ class Servers extends Component
     }
 
     /**
-     * @return array
+     * Group sets of servers by server_type
+     *
+     * @return array<string, array<ServerStatus>>
      */
-    private function getServers() : array
+    private function getServers(): array
     {
         $result = [];
-        foreach(ServerStatus::all() as $server) {
+        foreach (ServerStatus::all() as $server) {
             $result[$server->server_type] ??= [];
             $result[$server->server_type][] = $server;
         }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\GameMode;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class GameModeSeeder extends Seeder
@@ -23,9 +22,7 @@ class GameModeSeeder extends Seeder
         ];
 
         foreach ($modes as $apiId => $name) {
-            GameMode::firstOrCreate([
-                'api_id' => $apiId
-            ], [
+            GameMode::firstOrCreate(['api_id' => $apiId], [
                 'name' => $name
             ]);
         }

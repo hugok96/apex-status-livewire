@@ -4,6 +4,7 @@
     border-radius: 0.5rem
     width: 100%
     overflow: hidden
+    box-sizing: border-box
 
     h1
         margin: 0
@@ -80,3 +81,27 @@
                 opacity: .6
                 font-size: 0.95rem
                 margin-bottom: -0.125rem
+
+
+@media (max-width: 600px)
+    .map
+        div.rotation-current
+            height: 15rem
+
+            > img
+                filter: unset
+                position: absolute
+                width: 100%
+                opacity: 0.7
+
+            .rotation-details
+                left: 0
+                width: 100%
+                filter: drop-shadow(2px 4px 6px black)
+
+                h2
+                    margin: 0 0 1rem
+                    font-size: 1.25rem
+
+            .rotation-next-up
+                left: 0

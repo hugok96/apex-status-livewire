@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        // Api singleton
         $this->app->bind(Api::class, function ($app) {
             return new Api();
         });

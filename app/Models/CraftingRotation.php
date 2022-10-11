@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CraftingRotation extends Model
 {
@@ -21,7 +22,8 @@ class CraftingRotation extends Model
         'end' => 'datetime:Y-m-d H:i:s',
     ];
 
-    public function items() {
+    public function items(): HasMany
+    {
         return $this->hasMany(ItemDefinition::class, 'crafting_rotation_id');
     }
 }
