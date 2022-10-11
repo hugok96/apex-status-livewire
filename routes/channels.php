@@ -13,4 +13,4 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('updates', fn() => true);
+// Broadcast::channel('updates', fn() => true);
